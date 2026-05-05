@@ -17,4 +17,19 @@ namespace libfile{
         return result;
     };
 
+    std::string overwrite(std::string file1, std::string file2) {
+        std::ifstream ofile, ifile;
+        std::string result, buffer, data;
+
+        ofile.open(file1, std::ios::trunc);
+        ifile.open(file2);
+
+        if (ifile.is_open()) {
+            while(getline(ifile, buffer)) {
+                result = data.append(buffer + "\n");
+            }
+        }
+        return result;
+    }
+
 } // function read fast
