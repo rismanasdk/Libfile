@@ -5,9 +5,11 @@ libfile is an open source repository designed to shorten the code of fstream, wh
 ## Usage
 #Include fread.h and then use:
 libfile::read -> to read a file
+libfile::overwrite -> to replace output and file, (but to replace the file it doesn't work yet, I will update this method so that it can replace the file as well)
 
 -for example
 libfile::read("<your-file>");
+libfile::overwrite("file_1", "file_2");
 
 -Note: Use strings or ""
 
