@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace libfile {
 
@@ -18,6 +19,36 @@ inline std::string read(const std::string& file) {
     std::ostringstream buffer;
     buffer << rfile.rdbuf();
     return buffer.str();
+}
+
+inline bool try_read(const std::string& file, std::string& output) {
+    std::ifstream rfile(file);
+
+    if (!rfile.is_open()) {
+        output.clear();
+        return false;
+    }
+
+    std::ostringstream buffer;
+    buffer << rfile.rdbuf();
+    output = buffer.str();
+    return true;
+}
+
+inline std::vector<std::string> read_lines(const std::string& file) {
+    std::ifstream rfile(file);
+    std::vector<std::string> lines;
+    std::string line;
+
+    if (!rfile.is_open()) {
+        return lines;
+    }
+
+    while (std::getline(rfile, line)) {
+        lines.push_back(line);
+    }
+
+    return lines;
 }
 
 inline bool write(const std::string& file, const std::string& data) {
@@ -42,14 +73,47 @@ inline bool append(const std::string& file, const std::string& data) {
     return afile.good();
 }
 
-inline std::string overwrite(const std::string& file1, const std::string& file2) {
-    const std::string data = read(file2);
+inline bool write_lines(const std::string& file, const std::vector<std::string>& lines) {
+    std::ofstream wfile(file, std::ios::trunc);
 
-    if (data.empty() && !std::ifstream(file2).is_open()) {
+    if (!wfile.is_open()) {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+        wfile << lines[i];
+        if (i + 1 < lines.size()) {
+            wfile << '\n';
+        }
+    }
+
+    return wfile.good();
+}
+
+inline bool copy(const std::string& destination, const std::string& source) {
+    std::ifstream src(source, std::ios::binary);
+
+    if (!src.is_open()) {
+        return false;
+    }
+
+    std::ofstream dest(destination, std::ios::binary | std::ios::trunc);
+
+    if (!dest.is_open()) {
+        return false;
+    }
+
+    dest << src.rdbuf();
+    return dest.good();
+}
+
+inline std::string overwrite(const std::string& file1, const std::string& file2) {
+    std::string data;
+    if (!try_read(file2, data)) {
         return "";
     }
 
-    if (!write(file1, data)) {
+    if (!copy(file1, file2)) {
         return "";
     }
 
