@@ -11,6 +11,12 @@ inline bool exists(const std::string& path) {
     return std::filesystem::exists(path);
 }
 
+inline bool empty(const std::string& path) {
+    std::error_code error;
+    const bool result = std::filesystem::is_empty(path, error);
+    return !error && result;
+}
+
 inline bool is_file(const std::string& path) {
     return std::filesystem::is_regular_file(path);
 }
@@ -99,6 +105,52 @@ inline std::vector<std::string> list_dir(const std::string& path) {
     }
 
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
+        entries.push_back(entry.path().string());
+    }
+
+    return entries;
+}
+
+inline std::vector<std::string> list_files(const std::string& path) {
+    std::vector<std::string> entries;
+
+    if (!is_directory(path)) {
+        return entries;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+        if (entry.is_regular_file()) {
+            entries.push_back(entry.path().string());
+        }
+    }
+
+    return entries;
+}
+
+inline std::vector<std::string> list_dirs(const std::string& path) {
+    std::vector<std::string> entries;
+
+    if (!is_directory(path)) {
+        return entries;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+        if (entry.is_directory()) {
+            entries.push_back(entry.path().string());
+        }
+    }
+
+    return entries;
+}
+
+inline std::vector<std::string> list_dir_recursive(const std::string& path) {
+    std::vector<std::string> entries;
+
+    if (!is_directory(path)) {
+        return entries;
+    }
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
         entries.push_back(entry.path().string());
     }
 
