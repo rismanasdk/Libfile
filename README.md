@@ -121,7 +121,7 @@ Path and directory helpers:
 int main() {
     libfile::File note("note.txt");
     note.write("Hello world\n");
-    note.append("Belajar class dan method\n");
+    note.append("Testing add text with method append file helper\n")
 
     std::cout << note.read();
 
