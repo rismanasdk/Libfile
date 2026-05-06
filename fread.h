@@ -2,6 +2,7 @@
 #define LIBFILE_FREAD_H
 
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -121,22 +122,62 @@ inline std::string overwrite(const std::string& file1, const std::string& file2)
 }
 
 inline bool exists(const std::string& file) {
-    std::ifstream rfile(file);
-    return rfile.good();
+    return std::filesystem::exists(file);
+}
+
+inline bool is_file(const std::string& path) {
+    return std::filesystem::is_regular_file(path);
+}
+
+inline bool is_directory(const std::string& path) {
+    return std::filesystem::is_directory(path);
+}
+
+inline bool create_dir(const std::string& path) {
+    return std::filesystem::create_directory(path);
+}
+
+inline bool create_dirs(const std::string& path) {
+    return std::filesystem::create_directories(path);
+}
+
+inline bool rename(const std::string& old_path, const std::string& new_path) {
+    std::error_code error;
+    std::filesystem::rename(old_path, new_path, error);
+    return !error;
 }
 
 inline bool remove(const std::string& file) {
     return std::remove(file.c_str()) == 0;
 }
 
-inline std::streamoff size(const std::string& file) {
-    std::ifstream rfile(file, std::ios::binary | std::ios::ate);
+inline bool remove_all(const std::string& path) {
+    std::error_code error;
+    std::filesystem::remove_all(path, error);
+    return !error;
+}
 
-    if (!rfile.is_open()) {
+inline std::streamoff size(const std::string& file) {
+    std::error_code error;
+    const std::uintmax_t bytes = std::filesystem::file_size(file, error);
+
+    if (error) {
         return -1;
     }
 
-    return rfile.tellg();
+    return static_cast<std::streamoff>(bytes);
+}
+
+inline std::string filename(const std::string& path) {
+    return std::filesystem::path(path).filename().string();
+}
+
+inline std::string extension(const std::string& path) {
+    return std::filesystem::path(path).extension().string();
+}
+
+inline std::string parent_path(const std::string& path) {
+    return std::filesystem::path(path).parent_path().string();
 }
 
 }  // namespace libfile
