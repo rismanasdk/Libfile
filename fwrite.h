@@ -46,6 +46,23 @@ inline bool write_lines(const std::string& file, const std::vector<std::string>&
     return wfile.good();
 }
 
+inline bool append_lines(const std::string& file, const std::vector<std::string>& lines) {
+    std::ofstream afile(file, std::ios::app);
+
+    if (!afile.is_open()) {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+        afile << lines[i];
+        if (i + 1 < lines.size()) {
+            afile << '\n';
+        }
+    }
+
+    return afile.good();
+}
+
 inline bool write_bytes(const std::string& file, const std::vector<char>& data) {
     std::ofstream wfile(file, std::ios::binary | std::ios::trunc);
 

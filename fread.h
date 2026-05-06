@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "ffile.h"
 #include "fpath.h"
 #include "fwrite.h"
 
